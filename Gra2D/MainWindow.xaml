@@ -1,9 +1,10 @@
 ﻿<Window x:Class="Gra2D.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Gra WPF" Height="720" Width="1280" Background="#FF2E673F"
+        Title="Gra WPF" Height="770" Width="1290" Background="#FF2E673F"
         KeyDown="OknoGlowne_KeyDown"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -20,8 +21,11 @@
             </Grid.Background>
         </Grid>
 
-        <Image Source="/gracz.png" HorizontalAlignment="Left" Height="90" Margin="1190,1,0,0" VerticalAlignment="Top" Width="90"/>
-        <Label Name="L_drewno" Content="Drewno: 0" FontSize="16" Margin="306,1,364,70"/>
+        <Image Source="/gracz.png" HorizontalAlignment="Left" Height="86" Margin="1190,1,0,0" VerticalAlignment="Top" Width="90"/>
+        <Label Name="L_drewno" Content="Zebrane Drewno: 0" FontSize="16" Margin="306,1,811,70"/>
+        <Label Name="L_bomba" Content="Ilość bomb: 0" FontSize="16" Margin="306,32,811,39"/>
+        <Label Name="L_zycie" Content="Życia: 0" FontSize="16" Margin="306,62,811,8"/>
+
         <Button Content="Wczytaj mapę z pliku .txt" Click="B_WczytajMape_Click" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" Width="150" Height="29" Foreground="Black">
             <Button.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -93,7 +97,7 @@
             </Button.Background>
         </Button>
 
-        <TextBox Name="TB_ileWierszy" GotFocus="TB_ileWierszy_GotFocus"  HorizontalAlignment="Left" Margin="155,67,0,0" TextWrapping="Wrap" Text="Ile wierszy?" VerticalAlignment="Top" Width="73" Foreground="Black">
+        <TextBox Name="TB_ileWierszy" GotFocus="TB_ileWierszy_GotFocus"  HorizontalAlignment="Left" Margin="155,67,0,0" TextWrapping="Wrap" Text="(max 20)" VerticalAlignment="Top" Width="73" Foreground="Black">
             <TextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFC79B00"/>
@@ -101,7 +105,7 @@
                 </LinearGradientBrush>
             </TextBox.Background>
         </TextBox>
-        <TextBox Name="TB_ileKolumn" GotFocus="TB_ileKolumn_GotFocus"  HorizontalAlignment="Left" Margin="228,67,0,0" TextWrapping="Wrap" Text="Ile kolumn?" VerticalAlignment="Top" Width="73" Foreground="Black">
+        <TextBox Name="TB_ileKolumn" GotFocus="TB_ileKolumn_GotFocus"  HorizontalAlignment="Left" Margin="228,67,0,0" TextWrapping="Wrap" Text="(max 40)" VerticalAlignment="Top" Width="73" Foreground="Black">
             <TextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFC79B00"/>
@@ -118,7 +122,23 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <Button Content="Instrukcja (ma otwierać nowe okno z instrukcją" HorizontalAlignment="Left" Height="21" Margin="1190,70,0,0" VerticalAlignment="Top" Width="90"/>
+
+        <Button Name="B_instrukcja" Content="Instrukcja" HorizontalAlignment="Left" Height="20" Margin="1095,67,0,0" VerticalAlignment="Top" Width="90" Click="B_instrukcja_Click" Foreground="Black">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFD6A805"/>
+                    <GradientStop Color="#FFF7ECC3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+        </Button>
+        
+        <MediaElement Name="ME_MUSIC" LoadedBehavior="Manual" UnloadedBehavior="Manual" Volume="1" Stretch="Fill" Opacity="0" Margin="1295,5,-87,10"/>
     </Grid>
 </Window>
 
