@@ -14,7 +14,10 @@
     <None Remove="gracz.png" />
     <None Remove="laka.png" />
     <None Remove="las.png" />
+    <None Remove="lasleczniczy.png" />
     <None Remove="skala.png" />
+    <None Remove="wilk.png" />
+    <None Remove="woda.png" />
     <None Remove="zniszczone.png" />
   </ItemGroup>
 
@@ -23,7 +26,10 @@
     <Resource Include="gracz.png" />
     <Resource Include="laka.png" />
     <Resource Include="las.png" />
+    <Resource Include="lasleczniczy.png" />
     <Resource Include="skala.png" />
+    <Resource Include="wilk.png" />
+    <Resource Include="woda.png" />
     <Resource Include="zniszczone.png" />
   </ItemGroup>
 

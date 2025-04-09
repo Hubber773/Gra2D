@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Gra2D
 {
@@ -14,12 +16,14 @@ namespace Gra2D
     {
         public StringBuilder wygenerowanySB = new StringBuilder();
         //--//Stałe reprezentujące rodzaje terenu
-        public const int LAS = 1;     //--//las
-        public const int LAKA = 2;     //--//łąka
-        public const int SKALA = 3;   //--//skały
+        public const int LAS = 1;
+        public const int LAKA = 2;
+        public const int SKALA = 3;
         public const int BOMBA = 4;
         public const int ZNISZCZONE = 5;
-        public const int ILE_TERENOW = 6;   //--//ile terenów
+        public const int WODA = 6;
+        public const int LASLECZNICZY = 7;
+        public const int ILE_TERENOW = 8;
         //--//Mapa przechowywana jako tablica dwuwymiarowa int
         private int[,] mapa;
         private int szerokoscMapy;
@@ -42,6 +46,8 @@ namespace Gra2D
         private int iloscDrewna = 0;
         private int iloscBomb = 3;
         private int zycie = 3;
+        private bool isLoadingMap = false;
+        private CancellationTokenSource bombCancellationTokenSource;
         public MainWindow()
         {
             InitializeComponent();
@@ -59,79 +65,97 @@ namespace Gra2D
         }
         private void WczytajObrazyTerenu()
         {
-            //--//Zakładamy, że tablica jest indeksowana od 0, ale używamy indeksów 1-3
             obrazyTerenu[LAS] = new BitmapImage(new Uri("las.png", UriKind.Relative));
             obrazyTerenu[LAKA] = new BitmapImage(new Uri("laka.png", UriKind.Relative));
             obrazyTerenu[SKALA] = new BitmapImage(new Uri("skala.png", UriKind.Relative));
             obrazyTerenu[BOMBA] = new BitmapImage(new Uri("bomb.png", UriKind.Relative));
             obrazyTerenu[ZNISZCZONE] = new BitmapImage(new Uri("zniszczone.png", UriKind.Relative));
+            obrazyTerenu[WODA] = new BitmapImage(new Uri("woda.png", UriKind.Relative));
+            obrazyTerenu[LASLECZNICZY] = new BitmapImage(new Uri("lasleczniczy.png", UriKind.Relative));
         }
 
-        //--//Wczytuje mapę z pliku tekstowego i dynamicznie tworzy tablicę kontrolek Image
-        private void WczytajMape(string sciezkaPliku)
+        private async Task WczytajMapeAsync(string sciezkaPliku)
         {
+            isLoadingMap = true;
+            bombCancellationTokenSource?.Cancel();
+
             try
             {
-                var linie = File.ReadAllLines(sciezkaPliku);//--//zwraca tablicę stringów, np. linie[0] to pierwsza linia pliku
+                var linie = await Task.Run(() => File.ReadAllLines(sciezkaPliku));
                 wysokoscMapy = linie.Length;
-                szerokoscMapy = linie[0].Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;//--//zwraca liczbę elementów w tablicy
+                szerokoscMapy = linie[0].Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
                 mapa = new int[wysokoscMapy, szerokoscMapy];
 
-                for (int y = 0; y < wysokoscMapy; y++)
+                await Task.Run(() =>
                 {
-                    var czesci = linie[y].Split(' ', StringSplitOptions.RemoveEmptyEntries);//--//zwraca tablicę stringów np. czesci[0] to pierwszy element linii
+                    for (int y = 0; y < wysokoscMapy; y++)
+                    {
+                        var czesci = linie[y].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        for (int x = 0; x < szerokoscMapy; x++)
+                        {
+                            mapa[y, x] = int.Parse(czesci[x]);
+                        }
+                    }
+                });
+
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    SiatkaMapy.Children.Clear();
+                    SiatkaMapy.RowDefinitions.Clear();
+                    SiatkaMapy.ColumnDefinitions.Clear();
+
+                    for (int y = 0; y < wysokoscMapy; y++)
+                    {
+                        SiatkaMapy.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(RozmiarSegmentu) });
+                    }
                     for (int x = 0; x < szerokoscMapy; x++)
                     {
-                        mapa[y, x] = int.Parse(czesci[x]);//--//wczytanie mapy z pliku
+                        SiatkaMapy.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(RozmiarSegmentu) });
                     }
-                }
 
-                //--//Przygotowanie kontenera SiatkaMapy – czyszczenie elementów i definicji wierszy/kolumn
-                SiatkaMapy.Children.Clear();
-                SiatkaMapy.RowDefinitions.Clear();
-                SiatkaMapy.ColumnDefinitions.Clear();
-
-                for (int y = 0; y < wysokoscMapy; y++)
-                {
-                    SiatkaMapy.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(RozmiarSegmentu) });
-                }
-                for (int x = 0; x < szerokoscMapy; x++)
-                {
-                    SiatkaMapy.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(RozmiarSegmentu) });
-                }
-
-                //--//Tworzenie tablicy kontrolk Image i dodawanie ich do siatki
-                tablicaTerenu = new Image[wysokoscMapy, szerokoscMapy];
-                for (int y = 0; y < wysokoscMapy; y++)
-                {
-                    for (int x = 0; x < szerokoscMapy; x++)
+                    tablicaTerenu = new Image[wysokoscMapy, szerokoscMapy];
+                    for (int y = 0; y < wysokoscMapy; y++)
                     {
-                        Image obraz = new Image
+                        for (int x = 0; x < szerokoscMapy; x++)
                         {
-                            Width = RozmiarSegmentu,
-                            Height = RozmiarSegmentu
-                        };
+                            Image obraz = new Image
+                            {
+                                Width = RozmiarSegmentu,
+                                Height = RozmiarSegmentu
+                            };
 
-                        int rodzaj = mapa[y, x];
-                        if (rodzaj >= 1 && rodzaj < ILE_TERENOW)
-                        {
-                            obraz.Source = obrazyTerenu[rodzaj];//--//wczytanie obrazka terenu
-                        }
-                        else
-                        {
-                            obraz.Source = null;
-                        }
+                            int rodzaj = mapa[y, x];
+                            if (rodzaj >= 1 && rodzaj < ILE_TERENOW)
+                            {
+                                obraz.Source = obrazyTerenu[rodzaj];
+                            }
+                            else
+                            {
+                                obraz.Source = null;
+                            }
 
-                        Grid.SetRow(obraz, y);
-                        Grid.SetColumn(obraz, x);
-                        SiatkaMapy.Children.Add(obraz);//--//dodanie obrazka do siatki na ekranie
-                        tablicaTerenu[y, x] = obraz;
+                            Grid.SetRow(obraz, y);
+                            Grid.SetColumn(obraz, x);
+                            SiatkaMapy.Children.Add(obraz);
+                            tablicaTerenu[y, x] = obraz;
+                        }
                     }
-                }
+
+                    SiatkaMapy.Children.Add(obrazGracza);
+                    Panel.SetZIndex(obrazGracza, 1);
+                    pozycjaGraczaX = 0;
+                    pozycjaGraczaY = 0;
+                    AktualizujPozycjeGracza();
+
+                    iloscDrewna = 0;
+                    L_drewno.Content = "Zebrane Drewno: " + iloscDrewna;
+                    iloscBomb = 3;
+                    L_bomba.Content = "Ilość bomb: " + iloscBomb;
+                    zycie = 3;
+                    L_zycie.Content = "Życia: " + zycie;
+                });
 
                 Random rnd = new Random();
-                rnd.Next(1, 4);
-
                 if (rnd.Next(1, 4) == 1)
                 {
                     PlayBackgroundMusic("background.mp3");
@@ -144,40 +168,27 @@ namespace Gra2D
                 {
                     PlayBackgroundMusic("background3.mp3");
                 }
-                //--//Dodanie obrazka gracza – ustawiamy go na wierzchu
-                SiatkaMapy.Children.Add(obrazGracza);
-                Panel.SetZIndex(obrazGracza, 1);//--//ustawienie obrazka gracza na wierzchu
-                pozycjaGraczaX = 0;
-                pozycjaGraczaY = 0;
-                AktualizujPozycjeGracza();
-
-                iloscDrewna = 0;
-                L_drewno.Content = "Zebrane Drewno: " + iloscDrewna;
-                iloscBomb = 3;
-                L_bomba.Content = "Ilość bomb: " + iloscBomb;
-                zycie = 3;
-                L_zycie.Content = "Życia: " + zycie;
-            }//--//koniec try
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Błąd wczytywania mapy: " + ex.Message);
             }
+
+            isLoadingMap = false;
         }
 
-        //--//Aktualizuje pozycję obrazka gracza w siatce
         private void AktualizujPozycjeGracza()
         {
             Grid.SetRow(obrazGracza, pozycjaGraczaY);
             Grid.SetColumn(obrazGracza, pozycjaGraczaX);
         }
 
-        //--//Obsługa naciśnięć klawiszy – ruch gracza oraz wycinanie lasu
         private void OknoGlowne_KeyDown(object sender, KeyEventArgs e)
         {
             int nowyX = pozycjaGraczaX;
             int nowyY = pozycjaGraczaY;
             //--//zmiana pozycji gracza
-            if (e.Key == Key.W) nowyY--; // Zmieniłem na WASD bo strzałki przechodziły pomiędzy inne przyciski i inne takie obiekty*/
+            if (e.Key == Key.W) nowyY--;
             else if (e.Key == Key.S) nowyY++;
             else if (e.Key == Key.A) nowyX--;
             else if (e.Key == Key.D) nowyX++;
@@ -185,7 +196,7 @@ namespace Gra2D
             if (nowyX >= 0 && nowyX < szerokoscMapy && nowyY >= 0 && nowyY < wysokoscMapy)
             {
                 //--//Gracz nie może wejść na pole ze skałami
-                if (mapa[nowyY, nowyX] != SKALA)
+                if (mapa[nowyY, nowyX] != SKALA && mapa[nowyY, nowyX] != WODA)
                 {
                     pozycjaGraczaX = nowyX;
                     pozycjaGraczaY = nowyY;
@@ -196,16 +207,33 @@ namespace Gra2D
             //--//Obsługa wycinania lasu – naciskamy klawisz C
             if (e.Key == Key.C)
             {
-                if (mapa[pozycjaGraczaY, pozycjaGraczaX] == LAS)//--//jeśli gracz stoi na polu lasu
+                if (mapa[pozycjaGraczaY, pozycjaGraczaX] == LAS)
                 {
                     mapa[pozycjaGraczaY, pozycjaGraczaX] = LAKA;
                     tablicaTerenu[pozycjaGraczaY, pozycjaGraczaX].Source = obrazyTerenu[LAKA];
                     iloscDrewna++;
                     L_drewno.Content = "Drewno: " + iloscDrewna;
                 }
+                else if (mapa[pozycjaGraczaY, pozycjaGraczaX] == LASLECZNICZY)
+                {
+                    mapa[pozycjaGraczaY, pozycjaGraczaX] = LAKA;
+                    tablicaTerenu[pozycjaGraczaY, pozycjaGraczaX].Source = obrazyTerenu[LAKA];
+                    iloscDrewna++;
+                    L_drewno.Content = "Drewno: " + iloscDrewna;
+                    if (zycie < 3)
+                    {
+                        zycie++;
+                        L_zycie.Content = "Życia: " + zycie;
+                    }
+                }
             }
             if (e.Key == Key.F)
             {
+                if (isLoadingMap)
+                {
+                    return;
+                }
+
                 if (iloscBomb > 0)
                 {
                     iloscBomb -= 1;
@@ -217,8 +245,15 @@ namespace Gra2D
                     mapa[bombaY, bombaX] = BOMBA;
                     tablicaTerenu[bombaY, bombaX].Source = obrazyTerenu[BOMBA];
 
-                    Task.Delay(2000).ContinueWith(_ =>
+                    bombCancellationTokenSource = new CancellationTokenSource();
+
+                    Task.Delay(2000).ContinueWith(task =>
                     {
+                        if (isLoadingMap || bombCancellationTokenSource.Token.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             for (int y = -1; y <= 1; y++)
@@ -237,38 +272,40 @@ namespace Gra2D
                                             if (zycie == 0)
                                             {
                                                 MessageBox.Show("Przegrałeś");
-                                                WczytajMape("mapaWygenerowana.txt");
+                                                WczytajMapeAsync("mapaWygenerowana.txt");
                                             }
                                         }
 
-                                        mapa[nowyY, nowyX] = ZNISZCZONE;
-                                        tablicaTerenu[nowyY, nowyX].Source = obrazyTerenu[ZNISZCZONE];
+                                        if (mapa[nowyY, nowyX] != WODA)
+                                        {
+                                            mapa[nowyY, nowyX] = ZNISZCZONE;
+                                            tablicaTerenu[nowyY, nowyX].Source = obrazyTerenu[ZNISZCZONE];
+                                        }
                                     }
                                 }
                             }
                         });
-                    });
+                    }, bombCancellationTokenSource.Token);
                 }
             }
         }
 
-        //--//Obsługa przycisku "Wczytaj mapę"
-        private void B_WczytajMape_Click(object sender, RoutedEventArgs e)
+        private async void B_WczytajMape_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog oknoDialogowe = new OpenFileDialog();
             oknoDialogowe.Filter = "Plik mapy (*.txt)|*.txt";
-            oknoDialogowe.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory; //--//Ustawienie katalogu początkowego
+            oknoDialogowe.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             bool? czyOtwartoMape = oknoDialogowe.ShowDialog();
             if (czyOtwartoMape == true)
             {
-                WczytajMape(oknoDialogowe.FileName);
+                await WczytajMapeAsync(oknoDialogowe.FileName);
             }
         }
 
-        private void B_wklejTXTGry_Click(object sender, RoutedEventArgs e)
+        private async void B_wklejTXTGry_Click(object sender, RoutedEventArgs e)
         {
             File.WriteAllText("mapaWygenerowana.txt", Clipboard.GetText());
-            WczytajMape("mapaWygenerowana.txt");
+            await WczytajMapeAsync("mapaWygenerowana.txt");
         }
 
         private void B_GenerujLiczbyMapy_Click(object sender, RoutedEventArgs e)
@@ -279,8 +316,8 @@ namespace Gra2D
             bool czyWierszeOK = int.TryParse(TB_ileWierszy.Text, out int ileWierszy);
             bool czyKolumnyOK = int.TryParse(TB_ileKolumn.Text, out int ileKolumn);
 
-            ileWierszy = czyWierszeOK && ileWierszy > 0 ? ileWierszy : 5;
-            ileKolumn = czyKolumnyOK && ileKolumn > 0 ? ileKolumn : 5;
+            ileWierszy = czyWierszeOK && ileWierszy > 0 ? ileWierszy : 20;
+            ileKolumn = czyKolumnyOK && ileKolumn > 0 ? ileKolumn : 40;
 
             if (ileWierszy > 20 || ileKolumn > 40)
             {
@@ -288,11 +325,58 @@ namespace Gra2D
                 return;
             }
 
+            int[,] tempMapa = new int[ileWierszy, ileKolumn];
             for (int i = 0; i < ileWierszy; i++)
             {
                 for (int j = 0; j < ileKolumn; j++)
                 {
-                    sb.Append(rnd.Next(1, 4) + " ");
+                    tempMapa[i, j] = rnd.Next(1, 4);
+                }
+            }
+
+            for (int i = 0; i < ileWierszy * ileKolumn / 100; i++)
+            {
+                int x = rnd.Next(0, ileKolumn);
+                int y = rnd.Next(0, ileWierszy);
+                tempMapa[y, x] = LASLECZNICZY;
+            }
+
+            int puddleCount = rnd.Next(1, 3);
+            for (int p = 0; p < puddleCount; p++)
+            {
+                int puddleX = rnd.Next(0, ileKolumn);
+                int puddleY = rnd.Next(0, ileWierszy);
+                int puddleSize = rnd.Next(5, 9);
+
+                Queue<(int, int)> waterQueue = new Queue<(int, int)>();
+                waterQueue.Enqueue((puddleY, puddleX));
+                tempMapa[puddleY, puddleX] = WODA;
+
+                while (waterQueue.Count > 0 && puddleSize > 0)
+                {
+                    var (y, x) = waterQueue.Dequeue();
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        for (int dx = -1; dx <= 1; dx++)
+                        {
+                            int newX = x + dx;
+                            int newY = y + dy;
+                            if (newX >= 0 && newX < ileKolumn && newY >= 0 && newY < ileWierszy && tempMapa[newY, newX] != WODA && rnd.Next(0, 3) == 0)
+                            {
+                                tempMapa[newY, newX] = WODA;
+                                waterQueue.Enqueue((newY, newX));
+                                puddleSize--;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < ileWierszy; i++)
+            {
+                for (int j = 0; j < ileKolumn; j++)
+                {
+                    sb.Append(tempMapa[i, j] + " ");
                 }
                 sb.AppendLine();
             }
@@ -353,7 +437,7 @@ namespace Gra2D
                 "F - postawienie bomby\n" +
                 "\n" +
                 "Porady i wskazówki:\n" +
-                "-Zniszczone pole zostają na jednej rundzie\n" +
+                "-Koty miau miau kici kici\n" +
                 "\n",
                 FontSize = 20,
                 TextAlignment = TextAlignment.Center,
@@ -363,7 +447,3 @@ namespace Gra2D
         }
     }
 }
-
-
-
-
