@@ -12,6 +12,7 @@
     <None Remove="background.mp3" />
     <None Remove="bomb.png" />
     <None Remove="gracz.png" />
+    <None Remove="inv_bomb.png" />
     <None Remove="laka.png" />
     <None Remove="las.png" />
     <None Remove="lasleczniczy.png" />
@@ -23,6 +24,8 @@
 
   <ItemGroup>
     <Resource Include="bomb.png" />
+    <Resource Include="inv_bomb.png" />
+    <Resource Include="inv_drewno.png" />
     <Resource Include="gracz.png" />
     <Resource Include="laka.png" />
     <Resource Include="las.png" />

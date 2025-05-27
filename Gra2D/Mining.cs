@@ -20,9 +20,9 @@ namespace Gra2D
         private readonly Action<int> updateHealth;
         private readonly Grid gameGrid;
         private readonly Func<(int X, int Y)> getPlayerPosition;
-        private Rectangle progressBar;
+        private Rectangle? progressBar;
         private bool isChopping = false;
-        private CancellationTokenSource chopCancellationTokenSource;
+        private CancellationTokenSource? chopCancellationTokenSource;
 
         public Mining(GameConfig config, Image playerImage, int[,] map, Image[,] terrainImages,
             BitmapImage[] terrainBitmaps, Action<int> updateWoodCount, Action<int> updateHealth,
@@ -73,7 +73,7 @@ namespace Gra2D
                     map[playerY, playerX] = MapGenerator.LAKA;
                     terrainImages[playerY, playerX].Source = terrainBitmaps[MapGenerator.LAKA];
                     updateWoodCount(1);
-                    if (isHealingForest && updateHealth != null)
+                    if (isHealingForest)
                     {
                         updateHealth(config.HealingForestHealthGain);
                     }
@@ -86,7 +86,7 @@ namespace Gra2D
             {
                 RemoveProgressBar();
                 isChopping = false;
-                chopCancellationTokenSource.Dispose();
+                chopCancellationTokenSource?.Dispose();
                 chopCancellationTokenSource = null;
             }
         }

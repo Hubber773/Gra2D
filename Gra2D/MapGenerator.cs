@@ -23,7 +23,7 @@ namespace Gra2D
             this.config = config;
         }
 
-        public StringBuilder GenerateMap(int rows, int columns)
+        public StringBuilder? GenerateMap(int rows, int columns)
         {
             Random rnd = new Random();
             rows = rows > 0 && rows <= config.MaxRows ? rows : config.MaxRows;
@@ -67,7 +67,6 @@ namespace Gra2D
                 {
                     if (rnd.Next(0, 100) < config.HealingForestChance)
                     {
-                        // Check priority before placing healing forest
                         if (CanPlaceTile(LASLECZNICZY, tempMapa[i, j]))
                         {
                             tempMapa[i, j] = LASLECZNICZY;
@@ -84,11 +83,7 @@ namespace Gra2D
                 {
                     if (i >= 0 && i < rows && j >= 0 && j < columns)
                     {
-                        // Check priority before placing spawn tile
-                        if (CanPlaceTile(config.DefaultTileType, tempMapa[i, j]))
-                        {
-                            tempMapa[i, j] = config.DefaultTileType;
-                        }
+                        tempMapa[i, j] = LAKA;
                     }
                 }
             }
@@ -120,15 +115,12 @@ namespace Gra2D
             int newTilePriority = Array.IndexOf(config.TileOnTopPriority, newTile);
             int currentTilePriority = Array.IndexOf(config.TileOnTopPriority, currentTile);
 
-            // If newTile isn't in priority list, it can't override anything
             if (newTilePriority == -1)
                 return false;
 
-            // If currentTile isn't in priority list, newTile can override it
             if (currentTilePriority == -1)
                 return true;
 
-            // Higher priority (lower index) can override lower priority (higher index)
             return newTilePriority < currentTilePriority;
         }
 

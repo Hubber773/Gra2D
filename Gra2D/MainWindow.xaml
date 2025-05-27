@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Gra2D.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Gra WPF" Height="770" Width="1290" Background="#FF2E673F"
+        Title="Main Game" Height="770" Width="1290" Background="#FF2E673F"
         KeyDown="OknoGlowne_KeyDown"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -19,12 +19,20 @@
                     <GradientStop Color="#FF74ED00" Offset="1"/>
                 </LinearGradientBrush>
             </Grid.Background>
+
+            <Rectangle HorizontalAlignment="Left" Height="83" Margin="307,-95,0,0" Stroke="Black" VerticalAlignment="Top" Width="377">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#5913FF00"/>
+                        <GradientStop Color="#5900FFB3" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+
         </Grid>
 
-        <Image Source="/gracz.png" HorizontalAlignment="Left" Height="86" Margin="1190,1,0,0" VerticalAlignment="Top" Width="90"/>
-        <Label Name="L_drewno" Content="Zebrane Drewno: 0" FontSize="16" Margin="306,1,811,70"/>
-        <Label Name="L_bomba" Content="Ilość bomb: 0" FontSize="16" Margin="306,32,811,39"/>
-        <Label Name="L_zycie" Content="Życia: 0" FontSize="16" Margin="306,62,811,8"/>
+        <Image Source="/gracz.png" HorizontalAlignment="Left" Height="86" Margin="1089,4,0,0" VerticalAlignment="Top" Width="90"/>
+        <Label Name="L_zycie" FontFamily="Lucida Bright" Content="Życie: 0/100" FontSize="14" Margin="306,4,864,66" Foreground="#FF98F35C"/>
 
         <Button Content="Wczytaj mapę z pliku .txt" Click="B_WczytajMape_Click" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" Width="150" Height="29" Foreground="Black">
             <Button.BorderBrush>
@@ -114,6 +122,35 @@
             </TextBox.Background>
         </TextBox>
 
+        <Button Name="B_crafting" Content="Crafting" HorizontalAlignment="Left" Margin="690,50,0,0" VerticalAlignment="Top" Width="68" Height="37" Foreground="Black">
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFD6A805"/>
+                    <GradientStop Color="#FFF7ECC3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <Button Name="B_inventory" Content="Ekwipunek" HorizontalAlignment="Left" Margin="690,6,0,0" VerticalAlignment="Top" Width="68" Height="37" Foreground="Black" Click="B_inventory_Click">
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFD6A805"/>
+                    <GradientStop Color="#FFF7ECC3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+
         <Rectangle HorizontalAlignment="Center" Height="8" Margin="0,92,0,0" VerticalAlignment="Top" Width="1280">
             <Rectangle.Fill>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -123,7 +160,7 @@
             </Rectangle.Fill>
         </Rectangle>
 
-        <Button Name="B_instrukcja" Content="Instrukcja" HorizontalAlignment="Left" Height="20" Margin="1095,67,0,0" VerticalAlignment="Top" Width="90" Click="B_instrukcja_Click" Foreground="Black">
+        <Button Name="B_instrukcja" Content="Instrukcja" HorizontalAlignment="Left" Height="20" Margin="1180,67,0,0" VerticalAlignment="Top" Width="90" Click="B_instrukcja_Click" Foreground="Black">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFD6A805"/>
@@ -137,8 +174,88 @@
                 </LinearGradientBrush>
             </Button.BorderBrush>
         </Button>
-        
+
+        <Button Name="B_save" Content="Save" HorizontalAlignment="Left" Height="20" Margin="1180,10,0,0" VerticalAlignment="Top" Width="90" Click="B_save_Click" Foreground="Black">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFD6A805"/>
+                    <GradientStop Color="#FFF7ECC3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+        </Button>
+
+        <Button Name="B_load" Content="Load" HorizontalAlignment="Left" Height="20" Margin="1180,38,0,0" VerticalAlignment="Top" Width="90" Click="B_load_Click" Foreground="Black">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFD6A805"/>
+                    <GradientStop Color="#FFF7ECC3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.BorderBrush>
+        </Button>
+
         <MediaElement Name="ME_MUSIC" LoadedBehavior="Manual" UnloadedBehavior="Manual" Volume="1" Stretch="Fill" Opacity="0" Margin="1295,5,-87,10"/>
+
+        <!-- Stuffes Slots -->
+        <Rectangle Name="Rectangle_stuffes1" StrokeThickness="2.3" HorizontalAlignment="Left" Height="77" Margin="766,8,0,0" Stroke="Black" VerticalAlignment="Top" Width="77"/>
+        <Image Name="I_stuffes1" HorizontalAlignment="Left" Height="75" Margin="767,9,0,0" VerticalAlignment="Top" Width="75"/>
+        <Rectangle Name="Rectangle_stuffes2" StrokeThickness="2.3" HorizontalAlignment="Left" Height="77" Margin="847,8,0,0" Stroke="Black" VerticalAlignment="Top" Width="77"/>
+        <Image Name="I_stuffes2" HorizontalAlignment="Left" Height="75" Margin="848,9,0,0" VerticalAlignment="Top" Width="75"/>
+        <Rectangle Name="Rectangle_stuffes3" StrokeThickness="2.3" HorizontalAlignment="Left" Height="77" Margin="928,8,0,0" Stroke="Black" VerticalAlignment="Top" Width="77"/>
+        <Image Name="I_stuffes3" HorizontalAlignment="Left" Height="75" Margin="929,9,0,0" VerticalAlignment="Top" Width="75"/>
+
+        <!-- Tools Slots -->
+        <Rectangle Name="Rectangle_toolbar1" StrokeThickness="1.5" HorizontalAlignment="Left" Height="35" Margin="1009,7,0,0" VerticalAlignment="Top" Width="35">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFFFA400"/>
+                    <GradientStop Color="#FFFF2F00" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+        </Rectangle>
+        <Image Name="I_toolbar1" HorizontalAlignment="Left" Height="33" Margin="1010,8,0,0" VerticalAlignment="Top" Width="33"/>
+        <Rectangle Name="Rectangle_toolbar2" StrokeThickness="1.5" HorizontalAlignment="Left" Height="35" Margin="1009,48,0,0" VerticalAlignment="Top" Width="35">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFFFA400"/>
+                    <GradientStop Color="#FFFF2F00" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+        </Rectangle>
+        <Image Name="I_toolbar2" HorizontalAlignment="Left" Height="33" Margin="1010,49,0,0" VerticalAlignment="Top" Width="33"/>
+
+        <!-- Armor Slot -->
+        <Rectangle Name="Rectangle_armorbar1" StrokeThickness="1.5" HorizontalAlignment="Left" Height="35" Margin="1048,48,0,0" VerticalAlignment="Top" Width="35">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFFFAF00"/>
+                    <GradientStop Color="#FFDA00FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+        </Rectangle>
+        <Image Name="I_armorbar1" HorizontalAlignment="Left" Height="33" Margin="1049,49,0,0" VerticalAlignment="Top" Width="33"/>
+
+        <!-- Ability Slot -->
+        <Rectangle Name="Rectangle_abilitybar1" StrokeThickness="1.5" HorizontalAlignment="Left" Height="35" Margin="1048,7,0,0" VerticalAlignment="Top" Width="35">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF0057B7"/>
+                    <GradientStop Color="#FF00FF90" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+        </Rectangle>
+        <Image Name="I_abilitybar1" HorizontalAlignment="Left" Height="33" Margin="1049,8,0,0" VerticalAlignment="Top" Width="33"/>
+
     </Grid>
 </Window>
-

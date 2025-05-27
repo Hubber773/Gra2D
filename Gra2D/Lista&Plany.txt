@@ -1,0 +1,45 @@
+OGÓLNY POMYSŁ GRY:
+Prosta gra gdzie gracz zbiera zasoby żeby przetrwać noce.
+
+LISTA PRZYSZŁOŚCI:
+- Działający crafting
+
+- wrogowie
+
+- zwierzęta
+
+- wioski z mieszkańcamy
+* wymiany z mieszkańcamy wiosek
+* system reputacji
+
+- wielka ogromna mapa po której gracz może sie poruszać
+
+- gracz by mógł sie poruszać normalnie zamiast skacząć na następne pole za każdym poruszeniem
+* wtedy gracz zawsze był by wyśrodkowany
+  by pokazany na środku
+
+- budowanie, kładzenie bloków, półapek itp.
+
+- jakieś zastosowanie dla obrazku gracza z prawej od hotbarów
+
+- dzień i noc
+* w dzień gracz ma czas na spokojnie zebranie zasobów i zbudowanie bazy i ochrone
+* w noc zaczną nadciągać mroczne potwory które bedą próbowały zrobić wszystko żeby zabić gracza
+
+- większe rozbudowanie paneli statystyk która by pokazywała statystyki broni, umiejętnośći, głodu, zbroji, materiału i inne
+
+- niszczenie używając myszki zamiast wchądząc w pole żeby coś zniszczyć
+
+- system walki
+
+- specjalny przycisk dla tworzenia nowej gry razem z mapą i dodatkowymi ustawieniami czyli pliku konfiguracyjnego
+
+- choroby
+
+- więcej przedmiotów dla postaci do ubrania
+
+- pory roku
+
+- farming
+
+- MAP EDITOR
