@@ -1,4 +1,4 @@
-# Gra2D
+# Do Starve
 
 17.03.2025 v1.0
 - Zmiana większości wyglądu całego programu
