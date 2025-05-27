@@ -31,3 +31,13 @@
 - Inne mniejsze zmiany takie jak poruszanie sie postaci (co 0.15s może sie poruszać)
 - Więcej muzyki yaba daba doo
 - I najważniejsze.. można przechodzić przez kamień!!!
+
+27.05.2025 v1.4
+
+- Dodano ekwipunek w którym można przechowywać i wybierać dane przedmioty
+- Razem z ekwipunkiem przyszedł też system hotbaru, sloty w których można trzymać niektóre przedmioty takie jak bomby i używać je
+- Bomby są teraz w ekwipunku
+- Zapisywanie i ładowanie stanu gry
+- Zapisy są zachowywane w specjalnym folderze "saves"
+- inne mniejsze poprawki wizualne
+- inne mniejsze poprawki błędów
